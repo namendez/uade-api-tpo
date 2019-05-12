@@ -1,27 +1,51 @@
 import React, { Component } from 'react';
+// import { Link } from 'react-router-dom';
 import { CssBaseline, Typography, Paper, FormControl, InputLabel, Input, Button } from '@material-ui/core';
-import { withStyles, MuiThemeProvider } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
+import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 
-
-const classes = styles => ({
+const classes = theme => ({
+    main: {
+        marginLeft: theme.spacing.unit * 3,
+        marginRight: theme.spacing.unit * 3,
+    },
     paper: {
+        marginTop: theme.spacing.unit * 8,
+        display: 'flex',
+        flexDirection: 'column',
         boxShadow: 'unset',
-        backgroundColor: '#fafafa'
+        alignItems: 'center',
+        backgroundColor: '#fafafa',
+        padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    avatar: {
+        marginRight: theme.spacing.unit,
+        
     },
     form: {
         margin: 'auto',
         maxWidth: 500,
+        width: '100%',
+        marginTop: theme.spacing.unit * 16,
         textAlign: 'center'
     },
-    buttonInicio: {
-        marginTop: 10,
-        marginRight: 25
-    },
-    buttonRegistro: {
-        marginTop: 10,
-        marginLeft: 25
+    buttons: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        marginTop: theme.spacing.unit * 2.5
+
     }
 })
+
+const handleInvalidForm = (event) => {
+    console.log(event);
+}
 
 class Login extends Component {
     render () {
@@ -30,12 +54,14 @@ class Login extends Component {
             <main className={classes.main}>
                 <CssBaseline />
                 <Paper className={classes.paper}>
-                    <Typography component="h1" variant="h2">Buscador de películas</Typography>
-                    <Typography component="h2" variant="h5">
-                        Iniciar sesión
-                    </Typography>
-                    <form className={classes.form}>
-                        <FormControl required fullWidth>
+                    <div className={classes.header}>
+                        <Avatar className={classes.avatar}>
+                            <LocalMoviesIcon />
+                        </Avatar>
+                        <Typography style={{textAlign: 'center'}} component="h1" variant="display3">PELICULAS</Typography>
+                    </div>
+                    <form className={classes.form} onInvalid={handleInvalidForm}>
+                        <FormControl required fullWidth >
                             <InputLabel htmlFor="email">Dirección de correo</InputLabel>
                             <Input id="email" name="email" autoComplete="email" autoFocus />
                         </FormControl>
@@ -44,7 +70,11 @@ class Login extends Component {
                             <Input id="password" type="password" name="password" autoComplete="current-password"/>
                         </FormControl>
                         <div className={classes.buttons}>
-                            <Button className={classes.buttonInicio} type="submit" color="primary" variant="contained" disableRipple>Iniciar sesion</Button>
+                            <Button className={classes.buttonInicio} 
+                                    type="submit" 
+                                    color="primary" 
+                                    variant="contained" 
+                                    disableRipple>Ingresar</Button>
                             <Button className={classes.buttonRegistro} type="submit" color="primary" variant="contained" disableRipple>Registrarse</Button>
                         </div>
                     </form>

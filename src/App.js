@@ -10,6 +10,10 @@ import Error404 from './components/Error404';
 
 const theme = createMuiTheme();
 
+const onLoginClick = () => {
+  console.log('click login');
+}
+
 function App() {
   return (
     <MuiThemeProvider theme={theme}>
@@ -17,7 +21,7 @@ function App() {
 
         <BrowserRouter>
           <Switch>
-            <Route path="/" component={Login} exact/>
+            <Route path="/" component={Login} exact onClickLogin={onLoginClick}/>
             <Route path="/passchange" component={PasswordChange} />
             <Route path="/home" component={Home} />
             <Route component={Error404} />
@@ -27,5 +31,9 @@ function App() {
     </MuiThemeProvider>
   );
 }
+
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 export default App;
