@@ -4,8 +4,9 @@ import Input from '@material-ui/core/Input';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import CommentIcon from '@material-ui/icons/Comment';
 import SearchIcon from '@material-ui/icons/Search';
-import { FormControl, Card, CardMedia, CardContent, Typography , Grid } from '@material-ui/core';
+import { FormControl, Card, CardMedia, CardContent, Typography , Grid, IconButton } from '@material-ui/core';
 
 
 
@@ -130,25 +131,42 @@ const styles = theme => ({
         marginRight: theme.spacing.unit * 2
     },
     movieBox: {
-        width: '300px'
+        width: '300px',
+        marginBottom: theme.spacing.unit * 3
     },
     movieBoxImg: {
         height: '426px'
+    },
+    cardContent: {
+        textAlign: 'center'
+    },
+    cardIconButton: {
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 })
 
- // eslint-disable-next-line
 class MovieBox extends Component {  
     render () {
-        const classes = this.props.classes;
+        const { classes, movie } = this.props;
+
         return (
             <Card className={classes.movieBox} raised >
                 <CardMedia className={classes.movieBoxImg} 
-                            image="https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg"
-                            title="El padrino"
+                            image={movie.Poster}
+                            title={movie.Title}
                 />
-                <CardContent>
-                    <Typography component="p" >Prueba</Typography>
+                <CardContent className={classes.cardContent}>
+                    <Typography component="h5" variant="h5" >{movie.Title}</Typography>
+                    <Typography variant="subtitle1" color="textSecondary">{movie.Year}</Typography>
+                    <div className={classes.cardIconButton}>
+                        <IconButton>
+                            <CommentIcon />
+                        </IconButton>
+                        <IconButton >
+                            <FavoriteIcon />
+                        </IconButton>
+                    </div>
                 </CardContent>
             </Card>
         );
@@ -156,6 +174,12 @@ class MovieBox extends Component {
 }
 
 class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            movies,
+        }
+    }
     handleSearchSubmit = (event) => {
         event.preventDefault();
         console.log(event.target);
@@ -178,22 +202,17 @@ class Home extends Component {
                                 </FormControl>
                             </form>
                         </div>
-                        <FavoriteIcon className={classes.favoriteIcon}/>
+                        <IconButton>
+                            <FavoriteIcon className={classes.favoriteIcon}/>
+                        </IconButton>
                     </Toolbar>
                 </AppBar>
                     <Grid container className={classes.moviePanel} >
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <MovieBox classes={classes}></MovieBox> 
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <MovieBox classes={classes}></MovieBox> 
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <MovieBox classes={classes}></MovieBox> 
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <MovieBox classes={classes}></MovieBox> 
-                        </Grid>
+                        {this.state.movies.Search.map(movie =>
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={movie.imdbID}>
+                                <MovieBox classes={classes} movie={movie} ></MovieBox> 
+                            </Grid>
+                        )}
                     </Grid>
             </React.Fragment>
         );
