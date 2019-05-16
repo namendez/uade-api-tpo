@@ -6,8 +6,12 @@ import { withStyles } from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import CommentIcon from '@material-ui/icons/Comment';
 import SearchIcon from '@material-ui/icons/Search';
-import { FormControl, Card, CardMedia, CardContent, Typography , Grid, IconButton, Tooltip } from '@material-ui/core';
+import { FormControl, Card, CardMedia, CardContent, Typography , Grid, IconButton, Tooltip, Snackbar, SnackbarContent } from '@material-ui/core';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import WarningIcon from '@material-ui/icons/Warning';
+import amber from '@material-ui/core/colors/amber';
+import CloseIcon from '@material-ui/icons/Close';
+
 
 
 const OMDB_URL="http://www.omdbapi.com/?type=movie"
@@ -73,13 +77,22 @@ const styles = theme => ({
     cardIconButton: {
         display: 'flex',
         justifyContent: 'space-between'
+    },
+    snackBarMessage: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    snackBarText: {
+        marginLeft: theme.spacing.unit,
     }
 })
 
 class MovieBox extends Component {  
     render () {
-        const { classes, movie } = this.props;
-
+        const { classes } = this.props;
+        let { movie } = this.props;
+        if(movie.Poster === "N/A")
+            movie = Object.assign(movie, {Poster: 'https://www.nilfiskcfm.com/wp-content/uploads/2016/12/placeholder.png'});
         return (
             <Card className={classes.movieBox} raised >
                 <CardMedia className={classes.movieBoxImg} 
@@ -114,15 +127,16 @@ class Home extends Component {
             snackBarOpen: false,
             hasMore: false,
             searchTerm: '',
-            cantidadMostrada: 0
+            cantidadMostrada: 0,
+            snackBarNoResultsOpen: false
         }
     }
     handleSnackbarClose = (event, reason) => {
         // if (reason === 'clickaway') {
         //   return;
         // }
-    
-        this.setState({ snackBarOpen: false });
+        console.log(reason);
+        this.setState({ snackBarNoResultsOpen: false });
       };
 
     handleSearchSubmit = (event) => {
@@ -135,13 +149,12 @@ class Home extends Component {
             if (movies.Response === "True"){
                 const hasMore = movies.totalResults > 10 ? true : false;
                 this.setState({movies: movies, 
-                                page: 1, 
                                 hasMore, 
                                 searchTerm,
                                 cantidadMostrada: movies.Search.length});
             } 
             else 
-                this.setState({snackBarOpen: true});
+                this.setState({snackBarNoResultsOpen: true});
         });
         
         event.preventDefault();
@@ -189,21 +202,44 @@ class Home extends Component {
                     </Toolbar>
                 </AppBar>
                     
-                    {this.state.movies && 
-                        <InfiniteScroll className={classes.moviePanel}
-                            dataLength={this.state.cantidadMostrada}
-                            next={this.fetchMoreData}
-                            hasMore={this.state.hasMore}
-                            loader="Cargando..."
-                            endMessage={<Typography component="h1" variant="display3">FIN DE LOS RESULTADOS</Typography>}>
-                            <Grid container >
-                                {this.state.movies.Search.map(movie =>
-                                    <Grid item xs={12} sm={6} md={4} lg={3} key={movie.imdbID}>
-                                        <MovieBox classes={classes} movie={movie} />
-                                    </Grid>)}
-                            </Grid>
-                        </InfiniteScroll>
-                    }
+                {this.state.movies && 
+                    <InfiniteScroll className={classes.moviePanel}
+                        dataLength={this.state.cantidadMostrada}
+                        next={this.fetchMoreData}
+                        hasMore={this.state.hasMore}
+                        loader="Cargando..."
+                        endMessage={<Typography component="h1" variant="display3">FIN DE LOS RESULTADOS</Typography>}>
+                        <Grid container >
+                            {this.state.movies.Search.map(movie =>
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={movie.imdbID}>
+                                    <MovieBox classes={classes} movie={movie} />
+                                </Grid>)}
+                        </Grid>
+                    </InfiniteScroll>
+                }
+                <Snackbar 
+                    anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                    open={this.state.snackBarNoResultsOpen}
+                    autoHideDuration={3000}
+                    onClose={this.handleSnackbarClose}>
+                        <SnackbarContent
+                            style={{backgroundColor: amber[700]}}
+                            onClose={this.handleSnackbarClose}
+                            message={
+                                <span className={classes.snackBarMessage}>
+                                    <WarningIcon /> <span className={classes.snackBarText}>No se encontraron resultados</span>
+                                </span>
+                            }
+                            action={
+                                <IconButton
+                                    key="close"
+                                    aria-label="Close"
+                                    color="inherit"
+                                    onClick={this.handleSnackbarClose}
+                                ><CloseIcon /></IconButton>
+                            }
+                        />
+                </Snackbar>
             </React.Fragment>
         );
     }
